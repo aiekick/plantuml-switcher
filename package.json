@@ -16,7 +16,8 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onCommand:plantuml-switcher.relation"
+    "onCommand:plantuml-switcher.relation",
+    "onCommand:plantuml-switcher.arrow-layout"
   ],
   "repository": {
     "url": "https://github.com/aiekick/plantuml-switcher.git"
