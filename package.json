@@ -2,7 +2,7 @@
   "name": "plantuml-switcher",
   "displayName": "PlantUML Switcher",
   "description": "Switch PlantUML elements (relations, ...)",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "aiekick",
   "engines": {
     "vscode": "^1.88.0"

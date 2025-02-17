@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { reverseArrow, parseLine, switchLine } from '../extension';
+import { reverseArrow, parseLine, switchLine, toggleArrowTokenInArrow } from '../extension';
 
 suite('Extension Test Suite', () => {
 	vscode.window.showInformationMessage('Start all tests.');
@@ -16,7 +16,7 @@ suite('Extension Test Suite', () => {
 	});
 
 	test('parseLine Function', () => {
-		// Test with "::"
+		// Test avec "::"
 		const resultDoubleColon = parseLine('A::B "label1" --> "label2" C::D : relation');
 		assert.deepStrictEqual(resultDoubleColon, {
 			fromBlock: 'A::B',
@@ -27,7 +27,7 @@ suite('Extension Test Suite', () => {
 			relationName: 'relation'
 		});
 
-		// Test with "@"
+		// Test avec "@"
 		const resultAt = parseLine('A@B "label1" --> "label2" C@D : relation');
 		assert.deepStrictEqual(resultAt, {
 			fromBlock: 'A@B',
@@ -38,7 +38,7 @@ suite('Extension Test Suite', () => {
 			relationName: 'relation'
 		});
 
-		// Test with "."
+		// Test avec "."
 		const resultDot = parseLine('A.B "label1" --> "label2" C.D : relation');
 		assert.deepStrictEqual(resultDot, {
 			fromBlock: 'A.B',
@@ -49,7 +49,7 @@ suite('Extension Test Suite', () => {
 			relationName: 'relation'
 		});
 
-		// Test without relation (using "::")
+		// Test sans relation (avec "::")
 		const resultRelationLess = parseLine('A::B "label1" --> "label2" C::D');
 		assert.deepStrictEqual(resultRelationLess, {
 			fromBlock: 'A::B',
@@ -84,5 +84,15 @@ suite('Extension Test Suite', () => {
 		testCases.forEach(({ input, expected }) => {
 			assert.strictEqual(switchLine(input), expected);
 		});
+	});
+
+	test('toggleArrowTokenInArrow Function', () => {
+		assert.strictEqual(toggleArrowTokenInArrow('-->', 13, 13), `-->`);
+		assert.strictEqual(toggleArrowTokenInArrow('-->', 16, 13), '-->');
+		assert.strictEqual(toggleArrowTokenInArrow('-->', 15, 13), '--[norank]>');
+		assert.strictEqual(toggleArrowTokenInArrow('-->', 14, 13), '-[norank]->');
+		assert.strictEqual(toggleArrowTokenInArrow('--[norank]->', 14, 13), '--[hidden]->');
+		assert.strictEqual(toggleArrowTokenInArrow('--[hidden]->', 14, 13), '--->');
+		assert.strictEqual(toggleArrowTokenInArrow('<--', 14, 13), `<[norank]--`);
 	});
 });

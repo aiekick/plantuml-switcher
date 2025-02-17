@@ -1,9 +1,10 @@
 # Change Log
 
-All notable changes to the "plantuml-switcher" extension will be documented in this file.
+### 1.0.0
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+- Initial release of plantuml-switcher.
+- Added functionality to switch PlantUML relation lines.
 
-## [1.0.0]
+### 1.0.1
 
-- Initial release
+- Insert [norank], [hidden] or nothing when the cursor in on the link cyclically

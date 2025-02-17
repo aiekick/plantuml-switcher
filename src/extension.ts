@@ -5,6 +5,9 @@ const ARROW_CHARS = new Set([
     '<', '>', '-', '.', '[', ']', '|', 'o', '*', '\\', '/', '+', '#', '^'
 ]);
 
+const ARROW_TOGGLE_OPTIONS = ["", "norank", "hidden"];
+
+
 export function isArrowBlock(block: string): boolean {
     let inBrackets = false;
     for (const char of block) {
@@ -24,9 +27,8 @@ export function isArrowBlock(block: string): boolean {
 }
 
 /**
- * Searches for the arrow in the line.
- * Returns the object { arrow, index } where index is the position
- * of the arrow's occurrence in the string.
+ * Recherche la flèche dans la ligne.
+ * Renvoie { arrow, index } où index correspond à la position d'apparition.
  */
 export function findArrow(line: string): { arrow: string; index: number } | null {
     const blocks = line.split(/\s+/);
@@ -39,12 +41,12 @@ export function findArrow(line: string): { arrow: string; index: number } | null
 }
 
 /**
- * Reverses the arrow while taking into account the segments between brackets.
- * For example:
- *   "-->"         becomes "<--"
- *   "--|>"        becomes "<|--"
- *   "--[norank]->" becomes "<-[norank]--"
- *   "-[#red]-[bold]->" becomes "<-[bold]-[#red]-"
+ * Inverse la flèche en tenant compte des segments entre crochets.
+ * Par exemple :
+ *   "-->"         devient "<--"
+ *   "--|>"        devient "<|--"
+ *   "--[norank]->" devient "<-[norank]--"
+ *   "-[#red]-[bold]->" devient "<-[bold]-[#red]-"
  */
 export function reverseArrow(arrow: string): string {
     const tokens: string[] = [];
@@ -93,33 +95,23 @@ export interface ParsedLine {
 }
 
 /**
- * Analyzes a line in the following format:
+ * Analyse une ligne au format :
  *
  *    <fromBlock> [<fromLabel>] <arrow> [<toLabel>] <toBlock> [ : <relationName>]
  *
- * For example:
+ * Par exemple :
  *
  *    A::B "label1" --> "label2" C::D : relation
- *
- * The function splits the line into three parts:
- *  - The source part (before the arrow): if it ends with a label in quotes,
- *    that label is extracted and the remainder forms the source block.
- *  - The target part (after the arrow): if it starts with a label in quotes,
- *    that label is extracted and the remainder forms the target block.
- *  - The relation (after " : ") if present.
  */
 export function parseLine(line: string): ParsedLine | null {
-    // Locate the arrow in the line.
     const arrowInfo = findArrow(line);
     if (!arrowInfo) { return null; }
     const arrow = arrowInfo.arrow;
     const arrowPos = arrowInfo.index;
 
-    // Split the line into two parts: before and after the arrow.
     const beforeArrow = line.substring(0, arrowPos).trim();
     const afterArrow = line.substring(arrowPos + arrow.length).trim();
 
-    // In the part after the arrow, search for the relation separator " : "
     let mainPart = afterArrow;
     let relationName = "";
     const relSep = " : ";
@@ -129,9 +121,6 @@ export function parseLine(line: string): ParsedLine | null {
         relationName = afterArrow.substring(relIndex + relSep.length).trim();
     }
 
-    // Extract the source part:
-    // If the part before the arrow ends with a label in quotes,
-    // extract it and the remainder is the source block.
     let fromBlock = beforeArrow;
     let fromLabel = "";
     const firstQuoteIndex = beforeArrow.indexOf('"');
@@ -141,9 +130,6 @@ export function parseLine(line: string): ParsedLine | null {
         fromBlock = beforeArrow.substring(0, firstQuoteIndex).trim();
     }
 
-    // Extract the target part:
-    // If the main part starts with a label in quotes,
-    // extract it and the remainder is the target block.
     let toBlock = mainPart;
     let toLabel = "";
     if (mainPart.startsWith('"')) {
@@ -155,24 +141,23 @@ export function parseLine(line: string): ParsedLine | null {
     }
 
     return {
-        fromBlock,   // for example "A::B"
-        fromLabel,   // for example "label1"
-        arrow,       // for example "-->"
-        toLabel,     // for example "label2"
-        toBlock,     // for example "C::D"
-        relationName // for example "relation"
+        fromBlock,
+        fromLabel,
+        arrow,
+        toLabel,
+        toBlock,
+        relationName
     };
 }
 
 /**
- * Returns the "switched" line by swapping the source and target,
- * and reversing the arrow.
+ * Retourne la ligne "switchée" en échangeant source et cible et en inversant la flèche.
  *
- * For example, the line
+ * Par exemple, la ligne
  *
  *   A::B "label1" --> "label2" C::D : relation
  *
- * becomes
+ * devient
  *
  *   C::D "label2" <-- "label1" A::B : relation
  */
@@ -197,6 +182,39 @@ export function switchLine(line: string): string {
     return result.trim();
 }
 
+export function toggleArrowTokenInArrow(arrow: string, cursorOffset: number, arrowOffset: number): string {
+    const localOffset = cursorOffset - arrowOffset; 
+    if (localOffset === 0.0 || arrow.length === localOffset){
+        return arrow;
+    }
+    const nonEmptyTokens = ARROW_TOGGLE_OPTIONS.filter(token => token !== "");
+    const escapedTokens = nonEmptyTokens.map(token =>
+        token.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+    );
+    const pattern = escapedTokens.join("|");
+    const regex = new RegExp(`\\[(${pattern})\\]`);
+
+    const match = arrow.match(regex);
+    if (match) {
+        // Si un token est déjà présent, on passe au suivant dans le cycle.
+        const currentToken = match[1];
+        const currentIndex = ARROW_TOGGLE_OPTIONS.indexOf(currentToken);
+        const nextIndex = (currentIndex + 1) % ARROW_TOGGLE_OPTIONS.length;
+        const nextToken = ARROW_TOGGLE_OPTIONS[nextIndex];
+        if (nextToken === "") {
+            // On supprime le token.
+            return arrow.replace(regex, "");
+        } else {
+            // On remplace par le token suivant.
+            return arrow.replace(regex, `[${nextToken}]`);
+        }
+    } else {
+        // Aucun token n'est présent : insertion du premier token non vide
+        // à la position du curseur (offset relatif dans la flèche).
+        return arrow.slice(0, localOffset) + `[${ARROW_TOGGLE_OPTIONS[1]}]` + arrow.slice(localOffset);
+    }
+}
+
 export function activate(context: vscode.ExtensionContext) {
     let disposable = vscode.commands.registerCommand('plantuml-switcher.relation', () => {
         const editor = vscode.window.activeTextEditor;
@@ -205,11 +223,27 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         const position = editor.selection.active;
-        const line = editor.document.lineAt(position.line);
-        const newText = switchLine(line.text);
+        const lineInfo = editor.document.lineAt(position.line);
+        const line = lineInfo.text;
+        const arrowInfo = findArrow(line);
+        if (!arrowInfo) {
+            return;
+        }
+        const arrowStart = arrowInfo.index;
+        const arrowEnd = arrowInfo.index + arrowInfo.arrow.length;
+
+        let newText: string;
+        // Si le curseur est sur la flèche, on toggle le token.
+        if (position.character > arrowStart && position.character < arrowEnd) {
+            const toggledArrow = toggleArrowTokenInArrow(arrowInfo.arrow, position.character, arrowStart);
+            newText = line.substring(0, arrowStart) + toggledArrow + line.substring(arrowEnd);
+        } else {
+            // Sinon, on conserve l'ancien fonctionnement (switch de la relation).
+            newText = switchLine(line);
+        }
 
         editor.edit(editBuilder => {
-            editBuilder.replace(line.range, newText);
+            editBuilder.replace(lineInfo.range, newText);
         });
     });
 

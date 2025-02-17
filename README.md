@@ -15,7 +15,7 @@
 
 ## Requirements
 
-- Visual Studio Code version **1.97.0** or later.
+- Visual Studio Code version **1.88.0** or later.
 
 ## Extension Settings
 
@@ -41,5 +41,9 @@ This extension works with its default settings and does not require any addition
 
 - Initial release of plantuml-switcher.
 - Added functionality to switch PlantUML relation lines.
+
+### 1.0.1
+
+- Insert [norank], [hidden] or nothing when the cursor in on the link cyclically
 
 **Enjoy switching your PlantUML relations with ease!**
