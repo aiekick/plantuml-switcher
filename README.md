@@ -28,6 +28,7 @@ This extension works with its default settings and does not require any addition
 
 ## Usage
 
+== Line switching ==
 1. Open a any file in Visual Studio Code with PlantUml content.
 2. Place your cursor on a line containing a PlantUML relation, for example:  
    `A::B "label1" --> "label2" C::D : relation`
@@ -35,6 +36,19 @@ This extension works with its default settings and does not require any addition
 4. The extension will automatically switch the line to:  
    `C::D "label2" <-- "label1" A::B : relation`
 
+== Link switching ==
+1. if your cursor in inside the link :
+`C::D "label2" <-- "label1" A::B : relation`
+                 ^-- cursor
+2. Press the key bound to the command (default key: `²`).
+3. The extension will automatically switch the line to:  
+   `C::D "label2" <-[norank]- "label1" A::B : relation`
+4. Then Press again and norank will be repalce by hidden and then nothing cyclically
+ps: if the cursor is palce at start or a end of the link, nothuing will happend since its not valid for plantUml
+`C::D "label2" <-- "label1" A::B : relation`
+   this        ^-- cursor
+   or this        ^-- cursor
+   
 ## Release Notes
 
 ### 1.0.0
