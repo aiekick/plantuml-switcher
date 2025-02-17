@@ -30,35 +30,19 @@ This extension works with its default settings and does not require any addition
 
 == Line switching ==
 1. Open a any file in Visual Studio Code with PlantUml content.
-2. Place your cursor on a line containing a PlantUML relation, for example:  
-```
-   `A::B "label1" --> "label2" C::D : relation`
-```
+2. Place your cursor on a line containing a PlantUML relation, for example: 
 3. Press the key bound to the command (default key: `²`).
-4. The extension will automatically switch the line to:  
-```
-   `C::D "label2" <-- "label1" A::B : relation`
-```
+4. The extension will automatically switch the line
+
+![img](images/demo_line_switching.gif)
 
 == Link switching ==
-1. if your cursor in inside the link :
-```
-`C::D "label2" <-- "label1" A::B : relation`
-                ^-- cursor
-```
-3. Press the key bound to the command (default key: `²`).
-4. The extension will automatically switch the line to:  
-```
-   `C::D "label2" <-[norank]- "label1" A::B : relation`
-```
-5. Then Press again and norank will be repalce by hidden and then nothing cyclically
-ps: if the cursor is palce at start or a end of the link, nothuing will happend since its not valid for plantUml
-```
-`C::D "label2" <-- "label1" A::B : relation`
-   this        ^-- cursor
-   or this        ^-- cursor
-```
+1. if your cursor in inside the link
+2. Press the key bound to the command (default key: `²`).
+4. The extension will automatically switch the link 
    
+![img](images/demo_link_switching.gif)
+
 ## Release Notes
 
 ### 1.0.0
