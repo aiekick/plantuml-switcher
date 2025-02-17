@@ -7,6 +7,9 @@
 - **Switch PlantUML Relations:**  
   Automatically reverse the arrow direction and swap the source and target blocks in a PlantUML relation.
   
+- **Switch PlantUML Layouts options for links:**  
+  Automatically insert [norank] and [hidden] layout options in a PlantUML link.
+  
 - **Quick Keybinding:**  
   Simply place your cursor on the line you want to switch and press the configured key (default is `²`).
 
@@ -29,16 +32,17 @@ This extension works with its default settings and does not require any addition
 ## Usage
 
 == Line switching ==
-1. Open a any file in Visual Studio Code with PlantUml content.
-2. Place your cursor on a line containing a PlantUML relation, for example: 
+1. Open any file in Visual Studio Code with PlantUml content.
+2. Place your cursor on a line containing a PlantUML relation 
 3. Press the key bound to the command (default key: `²`).
 4. The extension will automatically switch the line
 
 ![img](images/demo_line_switching.gif)
 
 == Link switching ==
-1. if your cursor in inside the link
-2. Press the key bound to the command (default key: `²`).
+1. Open any file in Visual Studio Code with PlantUml content.
+2. Place your cursor inside a PlantUml link 
+3. Press the key bound to the command (default key: `²`).
 4. The extension will automatically switch the link 
    
 ![img](images/demo_link_switching.gif)
