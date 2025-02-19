@@ -47,6 +47,12 @@ This extension works with its default settings and does not require any addition
    
 ![img](images/demo_link_switching.gif)
 
+## Know issues
+
+Where there is no spaces between a link and tokens ex : "TOTO<--TATA", the switching will not been applied.  
+This issue will not been solved.  
+The correction for make is work is : "TOTO <-- TATA"
+
 ## Release Notes
 
 ### 1.0.0
@@ -57,5 +63,9 @@ This extension works with its default settings and does not require any addition
 ### 1.0.1
 
 - Insert [norank], [hidden] or nothing when the cursor in on the link cyclically
+
+### 1.0.2
+
+- Fig a bug where an indentation prevent the switching to be applied
 
 **Enjoy switching your PlantUML relations with ease!**

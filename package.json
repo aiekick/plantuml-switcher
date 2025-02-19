@@ -1,8 +1,8 @@
 {
   "name": "plantuml-switcher",
   "displayName": "PlantUML Switcher",
-  "description": "Switch PlantUML elements (relations, ...)",
-  "version": "1.0.1",
+  "description": "Switch PlantUML elements (relations, links, ...)",
+  "version": "1.0.2",
   "publisher": "aiekick",
   "engines": {
     "vscode": "^1.88.0"
@@ -16,8 +16,7 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onCommand:plantuml-switcher.relation",
-    "onCommand:plantuml-switcher.arrow-layout"
+    "onCommand:plantuml-switcher.relation"
   ],
   "repository": {
     "url": "https://github.com/aiekick/plantuml-switcher.git"
@@ -28,20 +27,11 @@
       {
         "command": "plantuml-switcher.relation",
         "title": "PlantUML: Switch Relation"
-      },
-      {
-        "command": "plantuml-switcher.arrow-layout",
-        "title": "PlantUML: Switch arrow-layout"
       }
     ],
     "keybindings": [
       {
         "command": "plantuml-switcher.relation",
-        "key": "²",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "plantuml-switcher.arrow-layout",
         "key": "²",
         "when": "editorTextFocus"
       }
