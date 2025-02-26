@@ -29,6 +29,11 @@ This extension works with its default settings and does not require any addition
 
 - No known issues at the moment. If you encounter any bugs or unexpected behavior, please open an issue on the repository.
 
+## Config
+
+For some users, the default key '²' will not been defined after install  
+So you need to map a key for the shortcut 'plantuml-switcher.relation'
+
 ## Usage
 
 == Line switching ==
