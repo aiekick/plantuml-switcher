@@ -51,8 +51,8 @@ export function reverseArrow(arrow: string): string {
             currentToken += char;
         }
     }
-    if (currentToken) { 
-        tokens.push(currentToken); 
+    if (currentToken) {
+        tokens.push(currentToken);
     }
     tokens.reverse();
     const reversedTokens = tokens.map(token => {
@@ -192,6 +192,39 @@ export function switchString(line: string, cursorPos: number): string | null {
     }
     return switchRelation(line);
 }
+export function switchText(document: vscode.TextDocument, selection: vscode.Selection): { newText: string, range: vscode.Range } {
+    let range: vscode.Range;
+    let textToTransform: string;
+    let relativeSelection: vscode.Selection;
+    if (selection.isEmpty) { // cursor mode => row inversion, or arrow inversion according to cursor position
+        const lineNumber = selection.start.line;
+        const lineInfo = document.lineAt(lineNumber);
+        textToTransform = lineInfo.text;
+        const cursorPos = selection.active.character - lineInfo.range.start.character;
+        relativeSelection = new vscode.Selection(0, cursorPos, 0, cursorPos);
+        range = lineInfo.range;
+    } else { // selection mode. at least one character is selected across one or more lines => row inversion
+        const startLine = selection.start.line;
+        const endLine = selection.end.line;
+        const startChar = 0;
+        const endChar = document.lineAt(endLine).text.length;
+        range = new vscode.Range(startLine, startChar, endLine, endChar);
+        textToTransform = document.getText(range);
+        // Create a non-empty relative selection to trigger row inversion on all lines.
+        relativeSelection = new vscode.Selection(0, 0, 0, 1);
+    }
+    const lines = textToTransform.split(/\r?\n/);
+    if (relativeSelection.isEmpty) { // cursor mode
+        const cursorPos = relativeSelection.active.character;
+        const newLine = switchString(lines[0], cursorPos);
+        lines[0] = newLine ?? lines[0];
+    } else { // selection mode
+        for (let i = 0; i < lines.length; i++) {
+            lines[i] = switchRelation(lines[i]);
+        }
+    }
+    return { newText: lines.join("\n"), range };
+}
 
 export function activate(context: vscode.ExtensionContext) {
     let disposable = vscode.commands.registerCommand('plantuml-switcher.relation', () => {
@@ -199,16 +232,13 @@ export function activate(context: vscode.ExtensionContext) {
         if (!editor) {
             return;
         }
-        const position = editor.selection.active;
-        const lineInfo = editor.document.lineAt(position.line);
-        const newText = switchString(lineInfo.text, position.character);
-        if (newText) {
-            editor.edit(editBuilder => {
-                editBuilder.replace(lineInfo.range, newText);
-            });
-        }
+        const { newText, range } = switchText(editor.document, editor.selection);
+        editor.edit(editBuilder => {
+            editBuilder.replace(range, newText);
+        });
     });
     context.subscriptions.push(disposable);
 }
+
 
 export function deactivate() { }
