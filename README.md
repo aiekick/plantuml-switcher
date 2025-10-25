@@ -25,10 +25,6 @@
 This extension works with its default settings and does not require any additional configuration.  
 *Note: In previous iterations, a setting for the namespace operator was considered, but the current version operates solely based on the syntax of the PlantUML line.*
 
-## Known Issues
-
-- No known issues at the moment. If you encounter any bugs or unexpected behavior, please open an issue on the repository.
-
 ## Config
 
 For some users, the default key '²' will not been defined after install  
